@@ -6,46 +6,25 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useImageGeneration } from "@/hooks/use-image-generation";
-import { ImageDisplay } from "@/components/ImageDisplay";
-import {
-  MODEL_CONFIGS,
-  type ModelMode,
-  PROVIDER_ORDER,
-  type ProviderKey,
-  initializeProviderRecord,
-} from "@/lib/provider-config";
+
+interface FontVariation {
+  style: string;
+  text: string;
+}
 
 export default function FontsPage() {
   const [text, setText] = useState("");
   const [style, setStyle] = useState("");
-  const [mode, setMode] = useState<ModelMode>("performance");
-  const [selectedModels, setSelectedModels] = useState(
-    MODEL_CONFIGS.performance
-  );
-  const [enabledProviders, setEnabledProviders] = useState(
-    initializeProviderRecord(true)
-  );
-
-  const {
-    images,
-    timings,
-    failedProviders,
-    isLoading: isGenerating,
-    startGeneration,
-  } = useImageGeneration();
-
+  const [generatedFonts, setGeneratedFonts] = useState<FontVariation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!text.trim()) {
       toast({
         title: "Input Required",
@@ -64,14 +43,42 @@ export default function FontsPage() {
       return;
     }
 
-    const prompt = `Generate a tattoo design of the text "${text}"${style ? ` in a ${style} style` : ""}`;
-    const activeProviders = PROVIDER_ORDER.filter((p) => enabledProviders[p]);
-    if (activeProviders.length > 0) {
-      const providerToModel = {
-        replicate: selectedModels.replicate,
-      };
-      startGeneration(prompt, activeProviders, providerToModel);
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/generate-fonts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, style }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate fonts");
+      }
+
+      const data = await response.json();
+      setGeneratedFonts(data.variations || []);
+
+      toast({
+        title: "Success",
+        description: "Font variations generated successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate fonts. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleCopy = (fontText: string) => {
+    navigator.clipboard.writeText(fontText);
+    toast({
+      title: "Copied",
+      description: "Font text copied to clipboard!",
+    });
   };
 
   return (
@@ -104,54 +111,60 @@ export default function FontsPage() {
                     <Input
                       id="style"
                       onChange={(e) => setStyle(e.target.value)}
-                      placeholder="e.g., bold, elegant, gothic, modern..."
+                      placeholder="e.g., bold, elegant, gothic, modern, cursive..."
                       value={style}
                       className="border-none bg-transparent p-2 font-medium text-[#39FF14] text-base tracking-wide placeholder:text-[#39FF14]/50 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
                   <Button
                     className="w-full rounded-full"
-                    disabled={isGenerating}
+                    disabled={isLoading}
                     onClick={handleGenerate}
                     size="lg"
                   >
-                    {isGenerating && (
+                    {isLoading && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Generate Text Design
+                    Generate Font Variations
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Generated Image Display */}
-            {images.length > 0 && (
-              <div className="mx-auto mb-8 max-w-full px-4 sm:max-w-xl sm:px-0 md:max-w-2xl lg:max-w-3xl">
-                <div className="flex justify-center">
-                  {images
-                    .slice(0, 1)
-                    .map((imageItem) => (
-                      <div className="w-full max-w-[600px]" key={imageItem.provider}>
-                        <div className="relative h-[400px] sm:h-[500px] w-full rounded-lg bg-zinc-50 shadow-lg">
-                          <ImageDisplay
-                            failed={failedProviders.includes(imageItem.provider as ProviderKey)}
-                            image={imageItem.image}
-                            modelId={imageItem.modelId ?? "N/A"}
-                            provider={imageItem.provider}
-                            timing={timings[imageItem.provider as ProviderKey]}
-                          />
+            {/* Results Section */}
+            {generatedFonts.length > 0 && (
+              <div className="mx-auto max-w-full space-y-4 px-4 sm:max-w-xl sm:px-0 md:max-w-2xl lg:max-w-3xl">
+                <h2 className="mb-6 text-center font-bold text-xl sm:text-2xl">
+                  Generated Variations
+                </h2>
+                {generatedFonts.map((font, index) => (
+                  <Card key={index} className="rounded-lg border-2">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="mb-2 text-xs text-muted-foreground">{font.style}</p>
+                          <p className="break-words text-base sm:text-lg font-medium">{font.text}</p>
                         </div>
+                        <Button
+                          onClick={() => handleCopy(font.text)}
+                          size="icon"
+                          variant="ghost"
+                          className="shrink-0"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
                       </div>
-                    ))}
-                </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
 
             {/* Empty State */}
-            {!isGenerating && images.length === 0 && (
+            {!isLoading && generatedFonts.length === 0 && (
               <div className="mx-auto max-w-full px-4 py-12 text-center text-muted-foreground sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
                 <p>
-                  Enter text above and click "Generate Text Design" to create a tattoo design.
+                  Enter text above and click "Generate Font Variations" to see creative text transformations.
                 </p>
               </div>
             )}

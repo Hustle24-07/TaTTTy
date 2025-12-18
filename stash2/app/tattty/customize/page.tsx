@@ -17,11 +17,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useImageGeneration } from "@/hooks/use-image-generation";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import {
-  MODEL_CONFIGS,
-  type ModelMode,
   PROVIDER_ORDER,
   type ProviderKey,
   initializeProviderRecord,
+  CUSTOMIZE_MODEL,
 } from "@/lib/provider-config";
 
 interface ImageUpload {
@@ -36,10 +35,6 @@ export default function CustomizePage() {
     { id: 0, file: null, preview: null },
     { id: 1, file: null, preview: null },
   ]);
-  const [mode, setMode] = useState<ModelMode>("performance");
-  const [selectedModels, setSelectedModels] = useState(
-    MODEL_CONFIGS.performance
-  );
   const [enabledProviders, setEnabledProviders] = useState(
     initializeProviderRecord(true)
   );
@@ -145,7 +140,7 @@ export default function CustomizePage() {
     const activeProviders = PROVIDER_ORDER.filter((p) => enabledProviders[p]);
     if (activeProviders.length > 0) {
       const providerToModel = {
-        replicate: selectedModels.replicate,
+        replicate: CUSTOMIZE_MODEL,
       };
       startGeneration(prompt, activeProviders, providerToModel);
     }

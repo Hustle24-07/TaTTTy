@@ -15,6 +15,7 @@ export const PROVIDERS: Record<
     iconPath: "/provider-icons/replicate.svg",
     color: "from-purple-500 to-blue-500",
     models: [
+      "black-forest-labs/flux-2.1-pro",
       "black-forest-labs/flux-1.1-pro",
       "black-forest-labs/flux-1.1-pro-ultra",
       "black-forest-labs/flux-dev",
@@ -39,6 +40,8 @@ export const MODEL_CONFIGS: Record<ModelMode, Record<ProviderKey, string>> = {
     replicate: "stability-ai/stable-diffusion-3.5-large",
   },
 };
+
+export const CUSTOMIZE_MODEL = "black-forest-labs/flux-2.1-pro";
 
 export const PROVIDER_ORDER: ProviderKey[] = ["replicate"];
 
