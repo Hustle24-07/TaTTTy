@@ -46,9 +46,10 @@ export const uploadImage = async (fileData: SerializableFile, title: string) => 
 	const { attempt, stepStartedAt, stepId } = getStepMetadata();
 
 	// Create a descriptive filename from the title
+	// Must use "tattty/" prefix so gallery can find it (load-more-images.ts uses prefix: "tattty/")
 	const slug = slugify(title);
 	const extension = getExtension(fileData.name, fileData.type);
-	const filename = `${slug}.${extension}`;
+	const filename = `tattty/${slug}.${extension}`;
 
 	console.log(
 		`[${stepId}] Uploading image (attempt ${attempt})...`,
