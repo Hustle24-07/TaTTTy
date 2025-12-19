@@ -4,10 +4,10 @@ import { Loader2Icon } from "lucide-react";
 import type { RefObject } from "react";
 import { Preview } from "@/components/preview";
 import { PRIORITY_COUNT } from "../constants";
-import type { LightboxItem } from "../types";
+import type { GalleryItem } from "../types";
 
 type GalleryGridProps = {
-	items: LightboxItem[];
+	items: GalleryItem[];
 	selectedIndex: number | null;
 	onItemClick: (index: number) => void;
 	isShowingSearchResults: boolean;
@@ -30,7 +30,7 @@ export const GalleryGrid = ({
 	return (
 		<>
 			<div className="grid grid-cols-2 gap-1 md:grid-cols-4 md:gap-2">
-				{items.map((item: LightboxItem, index: number) => (
+				{items.map((item: GalleryItem, index: number) => (
 					<Preview
 						key={`${item.url}-${index}`}
 						onClick={(): void => onItemClick(index)}

@@ -6,7 +6,7 @@ export type ResultsClientProps = {
 	initialHasMore?: boolean;
 };
 
-export type LightboxItem = {
+export type GalleryItem = {
 	url: string;
 	name?: string;
 	description?: string;

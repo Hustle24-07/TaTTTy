@@ -244,3 +244,238 @@ UPSTASH_SEARCH_REST_TOKEN=...
 BLOB_READ_WRITE_TOKEN=...
 XAI_API_KEY=...  # For Grok
 ```
+
+---
+
+## Vercel Workflow Deep Dive
+
+### Core Concepts
+
+Vercel Workflow (WDK - Workflow Development Kit) turns async functions into **durable workflows** that:
+
+- **Survive crashes & deploys** - Replays from event log
+- **Suspend without compute cost** - Sleep for days/months FREE
+- **Auto-retry on failure** - Built-in resilience
+
+### The Two Directives
+
+| Directive        | Purpose                          | Runtime                           |
+| ---------------- | -------------------------------- | --------------------------------- |
+| `"use workflow"` | Orchestrator - coordinates steps | **Sandboxed** - No full Node.js   |
+| `"use step"`     | Worker - does actual work        | **Full Node.js** - All npm access |
+
+### How It Works Under the Hood
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Workflow compiles to: API route + Event Log            │
+│                                                          │
+│  1. Each step → isolated API route                       │
+│  2. Workflow SUSPENDS while step runs (no compute!)      │
+│  3. All inputs/outputs → persisted to event log          │
+│  4. If crash/deploy → replays deterministically          │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Step Metadata API
+
+```typescript
+import { getStepMetadata } from "workflow";
+
+async function myStep() {
+  "use step";
+
+  const { stepId, attempt, stepStartedAt } = getStepMetadata();
+
+  // stepId: string      - Unique ID (use for idempotency keys!)
+  // attempt: number     - 1, 2, 3... increases with retries
+  // stepStartedAt: Date - When this attempt started
+}
+```
+
+### Retry Configuration
+
+```typescript
+async function callExternalAPI() {
+  "use step";
+  // ... do work
+}
+callExternalAPI.maxRetries = 5; // Default is 3
+```
+
+### Error Types
+
+```typescript
+import { FatalError, RetryableError, getStepMetadata } from "workflow";
+
+async function robustStep() {
+  "use step";
+  const { attempt } = getStepMetadata();
+
+  try {
+    const response = await fetch("...");
+
+    if (response.status === 429) {
+      // Rate limited - retry with delay
+      throw new RetryableError("Rate limited", { retryAfter: "1m" });
+    }
+
+    if (response.status === 404) {
+      // Not found - DON'T retry (fatal)
+      throw new FatalError("Resource not found");
+    }
+
+    if (response.status >= 500) {
+      // Server error - exponential backoff
+      throw new RetryableError("Server error", {
+        retryAfter: attempt ** 2 * 1000, // 1s, 4s, 9s, 16s...
+      });
+    }
+
+    return await response.json();
+  } catch (error) {
+    // Unknown errors auto-retry up to maxRetries
+    throw error;
+  }
+}
+robustStep.maxRetries = 5;
+```
+
+### Sleep (FREE - No Compute!)
+
+```typescript
+import { sleep } from "workflow";
+
+export async function reminderWorkflow(userId: string) {
+  "use workflow";
+
+  await sendInitialEmail(userId);
+  await sleep("24 hours"); // ← PAUSES, costs NOTHING
+  await sendFollowUp(userId);
+  await sleep("7 days"); // ← Can be days, weeks, MONTHS!
+  await sendFinalReminder(userId);
+}
+
+// Sleep formats:
+// Duration: "30s", "5m", "1 hour", "24 hours", "7 days", "1 month"
+// Date: await sleep(new Date("2025-12-25"))
+```
+
+### Hooks (Human-in-the-Loop)
+
+```typescript
+import { createHook } from "workflow";
+import { resumeHook } from "workflow/api";
+
+// In workflow:
+export async function approvalWorkflow(docId: string) {
+  "use workflow";
+
+  const hook = createHook<{ approved: boolean; comment: string }>();
+  console.log("Token:", hook.token);
+
+  const result = await hook; // SUSPENDS until resumed
+
+  if (result.approved) {
+    await processApproval(docId);
+  }
+}
+
+// In API route to resume:
+await resumeHook(token, { approved: true, comment: "Looks good!" });
+```
+
+### Webhooks (HTTP Resume)
+
+```typescript
+import { createWebhook } from "workflow";
+
+export async function paymentWorkflow(orderId: string) {
+  "use workflow";
+
+  const webhook = createWebhook();
+  console.log("Callback URL:", webhook.url); // Auto-generated!
+
+  await initiatePayment(orderId, webhook.url);
+
+  const request = await webhook; // SUSPENDS until HTTP POST
+  const data = await request.json();
+
+  if (data.status === "success") {
+    await fulfillOrder(orderId);
+  }
+}
+```
+
+### Starting Workflows
+
+```typescript
+import { start } from "workflow/api";
+import { processImage } from "./workflows/process-image";
+
+export async function POST(request: Request) {
+  const data = await request.json();
+
+  const run = await start(processImage, data);
+
+  return Response.json({
+    runId: run.id,
+    status: run.status,
+  });
+}
+```
+
+### Control Flow Patterns
+
+```typescript
+export async function batchWorkflow(items: Item[]) {
+  "use workflow";
+
+  // Sequential
+  for (const item of items) {
+    await processItem(item);
+  }
+
+  // Parallel
+  await Promise.all([stepA(), stepB(), stepC()]);
+
+  // Conditional
+  const result = await checkCondition();
+  if (result.needsReview) {
+    await humanReviewStep();
+  }
+}
+```
+
+### Observability
+
+**Dashboard:** Vercel Dashboard → Your Project → AI → Workflows
+
+Shows:
+
+- All runs with status (pending, completed, failed)
+- Each step's input/output
+- Retry attempts & timing
+
+**CLI:**
+
+```bash
+npx workflow inspect runs --limit 10
+npx workflow inspect runs --json
+npx workflow web  # Opens web UI
+```
+
+### Workflow Limitations
+
+❌ **Cannot cancel programmatically** - No API yet  
+❌ **Cannot pause manually** - Only via `sleep()` or hooks  
+❌ **Steps can't call steps** - Must be called from workflow  
+❌ **Workflow function is sandboxed** - No full Node.js access
+
+### Best Practices
+
+1. **Keep workflow functions simple** - Just orchestration logic
+2. **Put all I/O in steps** - API calls, DB, file operations
+3. **Use `stepId` for idempotency** - Especially for payments
+4. **Handle errors explicitly** - FatalError vs RetryableError
+5. **Log with `[stepId]`** - For debugging in observability

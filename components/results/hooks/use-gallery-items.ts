@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { LightboxItem } from "../types";
+import type { GalleryItem } from "../types";
 import { getBlobUrl, getFilenameFromUrl } from "../utils";
 
 type UploadedImage = {
@@ -12,13 +12,16 @@ type BlobLike = {
 	url?: string;
 	downloadUrl?: string;
 	size?: number;
+	content?: {
+		text?: string;
+	};
 };
 
 export const useGalleryItems = (
 	uploadedImages: UploadedImage[],
 	remoteBlobs: BlobLike[],
-): LightboxItem[] => {
-	return useMemo<LightboxItem[]>(() => {
+): GalleryItem[] => {
+	return useMemo<GalleryItem[]>(() => {
 		const optimistic = uploadedImages
 			.map((image) => ({
 				url: image.url,
@@ -31,6 +34,7 @@ export const useGalleryItems = (
 			.map((blob) => ({
 				url: getBlobUrl(blob),
 				name: getFilenameFromUrl(getBlobUrl(blob)),
+				description: blob.content?.text,
 				size: "size" in blob ? blob.size : undefined,
 			}))
 			.filter((item) => item.url);

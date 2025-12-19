@@ -1,1 +1,1 @@
-export type { LightboxItem, ResultsClientProps } from "./types";
+export type { GalleryItem, ResultsClientProps } from "./types";

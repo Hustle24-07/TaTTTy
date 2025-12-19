@@ -1,98 +1,133 @@
 "use client";
 
-import { useActionState, useEffect, useState, useCallback } from "react";
+import type { ListBlobResult } from "@vercel/blob";
+import {
+  ArrowLeftIcon,
+  FileIcon,
+  ImageIcon,
+  ImageUpIcon,
+  Loader2Icon,
+  UploadIcon,
+} from "lucide-react";
+import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { search } from "@/app/actions/search";
-import { GalleryGrid } from "./results/gallery";
-import { useGalleryItems, useInfiniteScroll, useLightbox } from "./results/hooks";
-import { ImageLightbox } from "./results/lightbox";
-import { SearchBar } from "./results/search";
-import type { ResultsClientProps } from "./results/types";
+import { Preview } from "./preview";
+import { Button } from "./ui/button";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
+import { Input } from "./ui/input";
+import { UploadButton } from "./upload-button";
 import { useUploadedImages } from "./uploaded-images-provider";
 
-export const ResultsClient = ({
-	defaultData,
-	initialCursor,
-	initialHasMore = false,
-}: ResultsClientProps) => {
-	const { images } = useUploadedImages();
-	const [state, formAction, isPending] = useActionState(search, { data: [] });
+type ResultsClientProps = {
+  defaultData: ListBlobResult["blobs"];
+};
 
-	const { blobs, hasMore, isLoadingMore, loadMoreRef } = useInfiniteScroll({
-		initialData: defaultData,
-		initialCursor,
-		initialHasMore,
-	});
+const PRIORITY_COUNT = 12;
 
-	const {
-		lightboxIndex,
-		selectedIndex,
-		openLightbox,
-		closeLightbox,
-		handleLightboxSelect,
-	} = useLightbox();
+export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
+  const { images } = useUploadedImages();
+  const [state, formAction, isPending] = useActionState(search, { data: [] });
 
-	// Likes disabled until auth is ready - UI visible but non-functional
-	const [likedUrls] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if ("error" in state) {
+      toast.error(state.error);
+    }
+  }, [state]);
 
-	// No-op until auth is implemented
-	const handleToggleLike = useCallback((_url: string) => {
-		toast.info("Likes coming soon with user accounts!");
-	}, []);
+  const reset = () => {
+    globalThis.location.reload();
+  };
 
-	useEffect(() => {
-		if ("error" in state) {
-			toast.error(state.error);
-		}
-	}, [state]);
+  const hasImages =
+    images.length ||
+    defaultData.length ||
+    ("data" in state && state.data?.length);
 
-	const reset = () => {
-		globalThis.location.reload();
-	};
+  return (
+    <>
+      {hasImages ? (
+        <div className="gap-4 sm:columns-2 md:columns-3 lg:columns-2 xl:columns-3">
+          {images.map((image, index) => (
+            <Preview
+              key={image.url}
+              priority={index < PRIORITY_COUNT}
+              url={image.url}
+            />
+          ))}
+          {"data" in state && state.data?.length
+            ? state.data.map((blob, index) => (
+                <Preview
+                  key={blob.url}
+                  priority={index < PRIORITY_COUNT}
+                  url={blob.url}
+                />
+              ))
+            : defaultData.map((blob, index) => (
+                <Preview
+                  key={blob.url}
+                  priority={index < PRIORITY_COUNT}
+                  url={blob.downloadUrl}
+                />
+              ))}
+        </div>
+      ) : (
+        <Empty className="h-full min-h-[50vh] rounded-lg border">
+          <EmptyHeader className="max-w-none">
+            <div className="relative isolate mb-8 flex">
+              <div className="-rotate-12 translate-x-2 translate-y-2 rounded-full border bg-background p-3 shadow-xs">
+                <ImageIcon className="size-5 text-muted-foreground" />
+              </div>
+              <div className="z-10 rounded-full border bg-background p-3 shadow-xs">
+                <UploadIcon className="size-5 text-muted-foreground" />
+              </div>
+              <div className="-translate-x-2 translate-y-2 rotate-12 rounded-full border bg-background p-3 shadow-xs">
+                <FileIcon className="size-5 text-muted-foreground" />
+              </div>
+            </div>
+            <EmptyTitle>No images found</EmptyTitle>
+            <EmptyDescription>
+              Upload some images with the{" "}
+              <ImageUpIcon className="inline size-4" /> button below to get
+              started!
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
 
-	const isShowingSearchResults =
-		"data" in state && Array.isArray(state.data) && state.data.length > 0;
-
-	const remoteBlobs = isShowingSearchResults ? (state.data ?? []) : blobs;
-
-	const galleryItems = useGalleryItems(images, remoteBlobs);
-
-	const hasImages = galleryItems.length > 0;
-
-	return (
-		<div className="h-[calc(100svh-var(--header-height))] w-full overflow-hidden md:h-[calc(100svh-var(--header-height)-1rem)]">
-			<div className="relative h-full w-full">
-				<div className="h-full w-full overflow-y-auto p-1 pb-24 md:p-2">
-					<GalleryGrid
-						items={galleryItems}
-						selectedIndex={selectedIndex}
-						onItemClick={openLightbox}
-						isShowingSearchResults={isShowingSearchResults}
-						loadMoreRef={loadMoreRef}
-						isLoadingMore={isLoadingMore}
-						hasMore={hasMore}
-						likedUrls={likedUrls}
-					/>
-				</div>
-
-				<SearchBar
-					formAction={formAction}
-					isPending={isPending}
-					isShowingSearchResults={isShowingSearchResults}
-					hasImages={hasImages}
-					onReset={reset}
-				/>
-			</div>
-
-			<ImageLightbox
-				activeIndex={lightboxIndex}
-				items={galleryItems}
-				onClose={closeLightbox}
-				onSelect={handleLightboxSelect}
-				likedUrls={likedUrls}
-				onToggleLike={handleToggleLike}
-			/>
-		</div>
-	);
+      <form
+        action={formAction}
+        className="-translate-x-1/2 fixed bottom-8 left-1/2 flex w-full max-w-sm items-center gap-1 rounded-full bg-background p-1 shadow-xl sm:max-w-lg lg:ml-[182px]"
+      >
+        {"data" in state && state.data.length > 0 && (
+          <Button
+            className="shrink-0 rounded-full"
+            disabled={isPending}
+            onClick={reset}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
+            <ArrowLeftIcon className="size-4" />
+          </Button>
+        )}
+        <Input
+          className="w-full rounded-full border-none bg-secondary shadow-none outline-none"
+          disabled={isPending || !hasImages}
+          id="search"
+          name="search"
+          placeholder="Search by description"
+          required
+        />
+        {isPending ? (
+          <Button className="shrink-0" disabled size="icon" variant="ghost">
+            <Loader2Icon className="size-4 animate-spin" />
+          </Button>
+        ) : (
+          <UploadButton />
+        )}
+      </form>
+    </>
+  );
 };
 
