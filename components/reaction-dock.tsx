@@ -18,23 +18,32 @@ interface ReactionDockProps {
         onClick?: () => void;
     }[];
     className?: string;
+    orientation?: "horizontal" | "vertical";
 }
 
-export function ReactionDock({ items, className }: ReactionDockProps) {
-    const mouseX = useMotionValue(Infinity);
+export function ReactionDock({ items, className, orientation = "horizontal" }: ReactionDockProps) {
+    const mouseValue = useMotionValue(Infinity);
+    const isVertical = orientation === "vertical";
 
     return (
         <motion.div
-            onMouseMove={(e) => mouseX.set(e.pageX)}
-            onMouseLeave={() => mouseX.set(Infinity)}
+            onMouseMove={(e) => mouseValue.set(isVertical ? e.pageY : e.pageX)}
+            onMouseLeave={() => mouseValue.set(Infinity)}
             className={cn(
-                "mx-auto flex h-16 items-end gap-4 rounded-2xl px-4 pb-3",
+                "mx-auto flex gap-4 rounded-2xl p-3",
                 "bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-2xl",
+                isVertical ? "flex-col w-16 items-center h-auto" : "h-16 items-end px-4",
                 className
             )}
         >
             {items.map((item, i) => (
-                <DockItem key={i} mouseX={mouseX} onClick={item.onClick} label={item.label}>
+                <DockItem 
+                    key={i} 
+                    mouseValue={mouseValue} 
+                    onClick={item.onClick} 
+                    label={item.label}
+                    orientation={orientation}
+                >
                     {item.icon}
                 </DockItem>
             ))}
@@ -43,25 +52,32 @@ export function ReactionDock({ items, className }: ReactionDockProps) {
 }
 
 function DockItem({
-    mouseX,
+    mouseValue,
     children,
     onClick,
     label,
-}: {
-    mouseX: MotionValue;
+    orientation,
+}: Readonly<{
+    mouseValue: MotionValue;
     children: React.ReactNode;
     onClick?: () => void;
     label: string;
-}) {
+    orientation: "horizontal" | "vertical";
+}>) {
     const ref = React.useRef<HTMLDivElement>(null);
+    const isVertical = orientation === "vertical";
 
-    const distance = useTransform(mouseX, (val) => {
-        const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-        return val - bounds.x - bounds.width / 2;
+    const distance = useTransform(mouseValue, (val) => {
+        const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, y: 0, width: 0, height: 0 };
+        if (isVertical) {
+            return val - bounds.y - bounds.height / 2;
+        } else {
+            return val - bounds.x - bounds.width / 2;
+        }
     });
 
-    const widthSync = useTransform(distance, [-150, 0, 150], [40, 90, 40]);
-    const width = useSpring(widthSync, {
+    const sizeSync = useTransform(distance, [-150, 0, 150], [40, 90, 40]);
+    const size = useSpring(sizeSync, {
         mass: 0.1,
         stiffness: 150,
         damping: 12,
@@ -76,14 +92,17 @@ function DockItem({
     };
 
     return (
-        <div className="relative flex flex-col items-center">
+        <div className={cn("relative flex items-center", isVertical ? "flex-row" : "flex-col")}>
             <AnimatePresence>
                 {isHovered && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, x: "-50%" }}
-                        animate={{ opacity: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 2, x: "-50%" }}
-                        className="absolute -top-10 left-1/2 w-fit whitespace-nowrap rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-xs text-zinc-900 shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+                        initial={{ opacity: 0, x: isVertical ? -10 : "-50%", y: isVertical ? "-50%" : 10 }}
+                        animate={{ opacity: 1, x: isVertical ? -50 : "-50%", y: isVertical ? "-50%" : 0 }}
+                        exit={{ opacity: 0, x: isVertical ? -10 : "-50%", y: isVertical ? "-50%" : 2 }}
+                        className={cn(
+                            "absolute w-fit whitespace-nowrap rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-xs text-zinc-900 shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100",
+                            isVertical ? "right-full mr-2 top-1/2" : "-top-10 left-1/2"
+                        )}
                     >
                         {label}
                     </motion.div>
@@ -91,11 +110,12 @@ function DockItem({
             </AnimatePresence>
             <motion.div
                 ref={ref}
-                style={{ width }}
+                style={{ 
+                    width: isVertical ? 40 : size,
+                    height: isVertical ? size : 40,
+                }}
+                className="aspect-square rounded-full flex items-center justify-center relative"
                 onClick={handleClick}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-                className="aspect-square cursor-pointer rounded-full bg-white/50 dark:bg-black/50 border border-white/40 dark:border-white/10 shadow-sm backdrop-blur-sm flex items-center justify-center hover:bg-white/80 dark:hover:bg-black/80 transition-colors relative overflow-hidden"
             >
                 <AnimatePresence>
                     {hasReacted && (

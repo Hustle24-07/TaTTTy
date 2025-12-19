@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useId, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
-import { XIcon } from 'lucide-react';
+import { XIcon, Heart, Share2, Download, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ReactionDock } from './reaction-dock';
 
 export const transition = {
   type: 'spring',
@@ -99,55 +100,80 @@ export function MediaModal({ imgSrc, videoSrc, className }: IMediaModal) {
             >
               <motion.div
                 className={cn(
-                  'pointer-events-auto relative flex flex-col overflow-hidden dark:bg-gray-950 bg-gray-200 border w-[80%] h-[90%]',
-                  imgSrc && 'cursor-zoom-out'
+                  'pointer-events-auto relative flex flex-col items-center justify-center z-50',
+                  'w-full h-full'
                 )}
-                layoutId={`dialog-${uniqueId}`}
-                layout={isMediaModalOpen}
-                tabIndex={-1}
-                style={{
-                  borderRadius: '24px',
-                }}
               >
-                {imgSrc && (
-                  <motion.div
-                    layoutId={`dialog-img-${uniqueId}`}
-                    className='w-full h-full'
-                    onClick={() => setIsMediaModalOpen(false)}
-                  >
-                    <img
-                      src={imgSrc}
-                      alt=''
-                      className='h-full w-full object-cover'
-                    />
-                  </motion.div>
-                )}
-                {videoSrc && (
-                  <motion.div
-                    layoutId={`dialog-video-${uniqueId}`}
-                    className='w-full h-full'
-                  >
-                    <video
-                      autoPlay
-                      muted
-                      loop
-                      controls
-                      className='h-full w-full object-cover  rounded-xs'
+                <motion.div
+                  className={cn(
+                    'relative flex flex-col overflow-hidden dark:bg-gray-950 bg-gray-200 border w-[80%] h-[80%]',
+                    imgSrc && 'cursor-zoom-out'
+                  )}
+                  layoutId={`dialog-${uniqueId}`}
+                  layout={isMediaModalOpen}
+                  tabIndex={-1}
+                  style={{
+                    borderRadius: '24px',
+                  }}
+                >
+                  {imgSrc && (
+                    <motion.div
+                      layoutId={`dialog-img-${uniqueId}`}
+                      className='w-full h-full'
+                      onClick={() => setIsMediaModalOpen(false)}
                     >
-                      <source src={videoSrc} type='video/mp4' />
-                    </video>
-                  </motion.div>
-                )}
-                {videoSrc && (
-                  <button
-                    onClick={() => setIsMediaModalOpen(false)}
-                    className='absolute right-6 top-6 p-3 text-zinc-50 cursor-pointer dark:bg-gray-900 bg-gray-400 hover:bg-gray-500 rounded-xl dark:hover:bg-gray-800'
-                    type='button'
-                    aria-label='Close dialog'
-                  >
-                    <XIcon size={24} />
-                  </button>
-                )}
+                      <img
+                        src={imgSrc}
+                        alt=''
+                        className='h-full w-full object-cover'
+                      />
+                    </motion.div>
+                  )}
+                  {videoSrc && (
+                    <motion.div
+                      layoutId={`dialog-video-${uniqueId}`}
+                      className='w-full h-full'
+                    >
+                      <video
+                        autoPlay
+                        muted
+                        loop
+                        controls
+                        className='h-full w-full object-cover  rounded-xs'
+                      >
+                        <source src={videoSrc} type='video/mp4' />
+                      </video>
+                    </motion.div>
+                  )}
+                  {videoSrc && (
+                    <button
+                      onClick={() => setIsMediaModalOpen(false)}
+                      className='absolute right-6 top-6 p-3 text-zinc-50 cursor-pointer dark:bg-gray-900 bg-gray-400 hover:bg-gray-500 rounded-xl dark:hover:bg-gray-800'
+                      type='button'
+                      aria-label='Close dialog'
+                    >
+                      <XIcon size={24} />
+                    </button>
+                  )}
+                </motion.div>
+
+                {/* Reaction Dock - Placed below the image */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ delay: 0.1 }}
+                  className="mt-6"
+                >
+                  <ReactionDock 
+                    items={[
+                      { icon: <Heart className="w-5 h-5" />, label: "Like", onClick: () => console.log("Like") },
+                      { icon: <Share2 className="w-5 h-5" />, label: "Share", onClick: () => console.log("Share") },
+                      { icon: <Download className="w-5 h-5" />, label: "Download", onClick: () => console.log("Download") },
+                      { icon: <Info className="w-5 h-5" />, label: "Details", onClick: () => console.log("Details") },
+                    ]}
+                  />
+                </motion.div>
               </motion.div>
             </motion.div>
           </>

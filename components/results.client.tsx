@@ -22,6 +22,8 @@ import { AspectRatio } from "./ui/aspect-ratio";
 
 type ResultsClientProps = {
   defaultData: ListBlobResult["blobs"];
+  initialCursor?: string;
+  initialHasMore?: boolean;
 };
 
 export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
