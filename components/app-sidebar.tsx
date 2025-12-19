@@ -83,11 +83,6 @@ const data = {
 			url: "/tattty/fonts",
 			icon: IconTypography,
 		},
-		{
-			title: "Customize",
-			url: "/tattty/customize",
-			icon: IconPalette,
-		},
 	],
 	navSecondary: [
 		{

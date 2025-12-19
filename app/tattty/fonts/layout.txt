@@ -1,0 +1,268 @@
+1. User enters text: "INK FEVER"
+2. User selects style: Gothic, Script, Chicano, Graffiti, Traditional, etc.
+3. Click Generate → AI creates ACTUAL IMAGES of the lettering
+4. User gets 4-8 unique visual variations
+5. Download/Save favorites
+
+
+Gothic/Blackletter - Classic heavy metal/biker style
+Chicano/Cholo - LA gang-style script lettering
+Traditional/Old School - Sailor Jerry style
+Script/Cursive - Elegant flowing handwriting
+Graffiti/Street - Urban spray paint style
+Tribal - Bold black tribal patterns
+Japanese Brush - Kanji-inspired brush strokes
+Victorian/Ornate - Fancy flourishes and decorations
+Minimalist/Fine Line - Clean modern single-line
+Hand-poked/Stick & Poke - Raw prison/DIY aesthetic
+
+
+
+┌─────────────────────────────────────────────────┐
+│              FONT FORGE 🔥                      │
+├─────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────┐    │
+│  │  Enter your text: [INK FEVER        ]   │    │
+│  └─────────────────────────────────────────┘    │
+│                                                 │
+│  Style: [Gothic ▼] [Script ▼] [Chicano ▼] ...   │
+│                                                 │
+│  [ 🔥 Generate Lettering ]                      │
+├─────────────────────────────────────────────────┤
+│  Results Grid (4 variations):                   │
+│  ┌──────────┐ ┌──────────┐                      │
+│  │  IMG 1   │ │  IMG 2   │                      │
+│  │ Gothic   │ │ Gothic   │                      │
+│  └──────────┘ └──────────┘                      │
+│  ┌──────────┐ ┌──────────┐                      │
+│  │  IMG 3   │ │  IMG 4   │                      │
+│  │ Gothic   │ │ Gothic   │                      │
+│  └──────────┘ └──────────┘                      │
+└─────────────────────────────────────────────────┘
+
+
+
+Component	Technology
+AI Model	tattzy25/tattty_4_all:4e8f6c1dc77db77dabaf98318cde3679375a399b434ae2db0e698804ac84919c
+API	Replicate (you already have it)
+Prompt Engineering	Style-specific tattoo lettering prompts
+Output	High-res PNG images with transparent/white background
+
+
+
+Run tattzy25/tattty_4_all using Replicate’s API. Check out the model's schema for an overview of inputs and outputs.
+
+import { writeFile } from "fs/promises";
+import Replicate from "replicate";
+const replicate = new Replicate();
+
+const input = {
+    prompt: "a beautiful TA-TTT-OO-ME tattoo image of a bold graffiti lettering, iconic urban symbols like spray cans or basketballs, classic Chicano art with roses and skulls, or minimalist stencil-style designs inspired by Banksy, often incorporating text, abstract shapes, and cultural nods for an edgy, authentic urban vibe. Think \"Time is Money,\" dollar signs, or a meaningful street name/tag, executed with sharp lines and blackwork"
+};
+
+const output = await replicate.run("tattzy25/tattty_4_all:4e8f6c1dc77db77dabaf98318cde3679375a399b434ae2db0e698804ac84919c", { input });
+
+// To access the file URLs:
+console.log(output[0].url());
+//=> "https://replicate.delivery/.../output_0.webp"
+
+// To write the files to disk:
+for (const [index, item] of Object.entries(output)) {
+  await writeFile(`output_${index}.webp`, item);
+}
+//=> output_0.webp written to disk
+
+
+
+models schema
+WE ARE NOT RENDERING ANY OF THESE OPTIONS FOR THE USER THHIS IS FOR YOUR REFERENCE ONLY 
+
+{
+  "type": "object",
+  "title": "Input",
+  "required": [
+    "prompt"
+  ],
+  "properties": {
+    "mask": {
+      "type": "string",
+      "title": "Mask",
+      "format": "uri",
+      "x-order": 2,
+      "description": "Image mask for image inpainting mode. If provided, aspect_ratio, width, and height inputs are ignored."
+    },
+    "seed": {
+      "type": "integer",
+      "title": "Seed",
+      "x-order": 11,
+      "description": "Random seed. Set for reproducible generation"
+    },
+    "image": {
+      "type": "string",
+      "title": "Image",
+      "format": "uri",
+      "x-order": 1,
+      "description": "Input image for image to image or inpainting mode. If provided, aspect_ratio, width, and height inputs are ignored."
+    },
+    "model": {
+      "enum": [
+        "dev",
+        "schnell"
+      ],
+      "type": "string",
+      "title": "model",
+      "description": "Which model to run inference with. The dev model performs best with around 28 inference steps but the schnell model only needs 4 steps.",
+      "default": "dev",
+      "x-order": 7
+    },
+    "width": {
+      "type": "integer",
+      "title": "Width",
+      "maximum": 1440,
+      "minimum": 256,
+      "x-order": 5,
+      "description": "Width of generated image. Only works if `aspect_ratio` is set to custom. Will be rounded to nearest multiple of 16. Incompatible with fast generation"
+    },
+    "height": {
+      "type": "integer",
+      "title": "Height",
+      "maximum": 1440,
+      "minimum": 256,
+      "x-order": 4,
+      "description": "Height of generated image. Only works if `aspect_ratio` is set to custom. Will be rounded to nearest multiple of 16. Incompatible with fast generation"
+    },
+    "prompt": {
+      "type": "string",
+      "title": "Prompt",
+      "x-order": 0,
+      "description": "Prompt for generated image. If you include the `trigger_word` used in the training process you are more likely to activate the trained object, style, or concept in the resulting image."
+    },
+    "go_fast": {
+      "type": "boolean",
+      "title": "Go Fast",
+      "default": false,
+      "x-order": 15,
+      "description": "Run faster predictions with model optimized for speed (currently fp8 quantized); disable to run in original bf16"
+    },
+    "extra_lora": {
+      "type": "string",
+      "title": "Extra Lora",
+      "x-order": 19,
+      "description": "Load LoRA weights. Supports Replicate models in the format <owner>/<username> or <owner>/<username>/<version>, HuggingFace URLs in the format huggingface.co/<owner>/<model-name>, CivitAI URLs in the format civitai.com/models/<id>[/<model-name>], or arbitrary .safetensors URLs from the Internet. For example, 'fofr/flux-pixar-cars'"
+    },
+    "lora_scale": {
+      "type": "number",
+      "title": "Lora Scale",
+      "default": 1,
+      "maximum": 3,
+      "minimum": -1,
+      "x-order": 18,
+      "description": "Determines how strongly the main LoRA should be applied. Sane results between 0 and 1 for base inference. For go_fast we apply a 1.5x multiplier to this value; we've generally seen good performance when scaling the base value by that amount. You may still need to experiment to find the best value for your particular lora."
+    },
+    "megapixels": {
+      "enum": [
+        "1",
+        "0.25"
+      ],
+      "type": "string",
+      "title": "megapixels",
+      "description": "Approximate number of megapixels for generated image",
+      "default": "1",
+      "x-order": 16
+    },
+    "num_outputs": {
+      "type": "integer",
+      "title": "Num Outputs",
+      "default": 1,
+      "maximum": 4,
+      "minimum": 1,
+      "x-order": 8,
+      "description": "Number of outputs to generate"
+    },
+    "aspect_ratio": {
+      "enum": [
+        "1:1",
+        "16:9",
+        "21:9",
+        "3:2",
+        "2:3",
+        "4:5",
+        "5:4",
+        "3:4",
+        "4:3",
+        "9:16",
+        "9:21",
+        "custom"
+      ],
+      "type": "string",
+      "title": "aspect_ratio",
+      "description": "Aspect ratio for the generated image. If custom is selected, uses height and width below & will run in bf16 mode",
+      "default": "1:1",
+      "x-order": 3
+    },
+    "output_format": {
+      "enum": [
+        "webp",
+        "jpg",
+        "png"
+      ],
+      "type": "string",
+      "title": "output_format",
+      "description": "Format of the output images",
+      "default": "webp",
+      "x-order": 12
+    },
+    "guidance_scale": {
+      "type": "number",
+      "title": "Guidance Scale",
+      "default": 3,
+      "maximum": 10,
+      "minimum": 0,
+      "x-order": 10,
+      "description": "Guidance scale for the diffusion process. Lower values can give more realistic images. Good values to try are 2, 2.5, 3 and 3.5"
+    },
+    "output_quality": {
+      "type": "integer",
+      "title": "Output Quality",
+      "default": 80,
+      "maximum": 100,
+      "minimum": 0,
+      "x-order": 13,
+      "description": "Quality when saving the output images, from 0 to 100. 100 is best quality, 0 is lowest quality. Not relevant for .png outputs"
+    },
+    "prompt_strength": {
+      "type": "number",
+      "title": "Prompt Strength",
+      "default": 0.8,
+      "maximum": 1,
+      "minimum": 0,
+      "x-order": 6,
+      "description": "Prompt strength when using img2img. 1.0 corresponds to full destruction of information in image"
+    },
+    "extra_lora_scale": {
+      "type": "number",
+      "title": "Extra Lora Scale",
+      "default": 1,
+      "maximum": 3,
+      "minimum": -1,
+      "x-order": 20,
+      "description": "Determines how strongly the extra LoRA should be applied. Sane results between 0 and 1 for base inference. For go_fast we apply a 1.5x multiplier to this value; we've generally seen good performance when scaling the base value by that amount. You may still need to experiment to find the best value for your particular lora."
+    },
+    "num_inference_steps": {
+      "type": "integer",
+      "title": "Num Inference Steps",
+      "default": 28,
+      "maximum": 50,
+      "minimum": 1,
+      "x-order": 9,
+      "description": "Number of denoising steps. More steps can give more detailed images, but take longer."
+    },
+    "disable_safety_checker": {
+      "type": "boolean",
+      "title": "Disable Safety Checker",
+      "default": true,
+      "x-order": 14,
+      "description": "Disable safety checker for generated images."
+    }
+  }
+}

@@ -12,18 +12,17 @@ import {
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { search } from "@/app/actions/search";
-import { Preview } from "./preview";
+import { MediaModal } from "./media-modal";
 import { Button } from "./ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
 import { Input } from "./ui/input";
 import { UploadButton } from "./upload-button";
 import { useUploadedImages } from "./uploaded-images-provider";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 type ResultsClientProps = {
   defaultData: ListBlobResult["blobs"];
 };
-
-const PRIORITY_COUNT = 12;
 
 export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
   const { images } = useUploadedImages();
@@ -48,27 +47,27 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
     <>
       {hasImages ? (
         <div className="gap-4 sm:columns-2 md:columns-3 lg:columns-2 xl:columns-3">
-          {images.map((image, index) => (
-            <Preview
-              key={image.url}
-              priority={index < PRIORITY_COUNT}
-              url={image.url}
-            />
+          {images.map((image) => (
+            <div key={image.url} className="mb-4 break-inside-avoid">
+              <AspectRatio ratio={1}>
+                <MediaModal imgSrc={image.url} />
+              </AspectRatio>
+            </div>
           ))}
           {"data" in state && state.data?.length
-            ? state.data.map((blob, index) => (
-                <Preview
-                  key={blob.url}
-                  priority={index < PRIORITY_COUNT}
-                  url={blob.url}
-                />
+            ? state.data.map((blob) => (
+                <div key={blob.url} className="mb-4 break-inside-avoid">
+                  <AspectRatio ratio={1}>
+                    <MediaModal imgSrc={blob.url} />
+                  </AspectRatio>
+                </div>
               ))
-            : defaultData.map((blob, index) => (
-                <Preview
-                  key={blob.url}
-                  priority={index < PRIORITY_COUNT}
-                  url={blob.downloadUrl}
-                />
+            : defaultData.map((blob) => (
+                <div key={blob.url} className="mb-4 break-inside-avoid">
+                  <AspectRatio ratio={1}>
+                    <MediaModal imgSrc={blob.downloadUrl} />
+                  </AspectRatio>
+                </div>
               ))}
         </div>
       ) : (

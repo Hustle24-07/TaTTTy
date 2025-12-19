@@ -9,7 +9,6 @@ const PAGE_TITLES: Record<string, string> = {
 	"/tattty": "Tattty AI",
 	"/tattty/gallery": "Gallery",
 	"/tattty/fonts": "Font Forge",
-	"/tattty/customize": "Customize",
 	"/tattty/settings": "Settings",
 	"/my-tatttz": "My TaTTTz",
 };

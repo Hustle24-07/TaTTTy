@@ -11,6 +11,7 @@ import {
 	PROVIDER_ORDER,
 	type ProviderKey,
 } from "@/lib/provider-config";
+import { LAYOUT_STYLES } from "@/lib/layout-styles";
 
 export default function Page() {
 	const {
@@ -47,47 +48,49 @@ export default function Page() {
 	};
 
 	return (
-		<div className="flex h-[calc(100svh-var(--header-height))] flex-1 flex-col overflow-hidden md:h-[calc(100svh-var(--header-height)-1rem)]">
-			<div className="h-full overflow-y-auto">
-				<div className="px-4 py-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-7xl">
-						<h1 className="mb-8 pt-4 text-center font-[family-name:var(--font-rock-salt)] font-bold text-3xl sm:mb-12 sm:pt-[30px] sm:text-5xl md:text-6xl lg:text-7xl">
-							ARE ALL? 📋
-						</h1>
+		<div className={LAYOUT_STYLES.pageContainer}>
+			{/* Header section - completely separate */}
+			<div className={LAYOUT_STYLES.headerSection}>
+				<h1 className={LAYOUT_STYLES.headerText}>
+					ARE ALL? 📋
+				</h1>
+			</div>
 
-						<div className="mx-auto max-w-full space-y-6 sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
-							<PromptInput
-								isLoading={isLoading}
-								mode={mode}
-								onModeChange={handleModeChange}
-								onSubmit={handlePromptSubmit}
-								onToggleProviders={() => {}}
-								showProviders={true}
-							/>
-						</div>
-
-						<div className="relative mt-12 flex justify-center">
-							{images.length > 0 ? (
-								<div className="w-full max-w-[1000px] px-4 sm:px-0">
-									<div className="relative h-[400px] sm:h-[500px] w-full rounded-lg bg-zinc-50 shadow-lg">
-										<ImageDisplay
-											failed={failedProviders.includes("replicate")}
-											image={images[0]?.image}
-											modelId={images[0]?.modelId ?? "N/A"}
-											provider={images[0]?.provider || "replicate"}
-											timing={timings["replicate"]}
-										/>
-									</div>
-								</div>
-							) : null}
-						</div>
-
-						{activePrompt && activePrompt.length > 0 && (
-							<div className="mt-8 text-center text-muted-foreground">
-								<p className="text-sm">Current prompt: {activePrompt}</p>
-							</div>
-						)}
+			{/* Scrollable content area */}
+			<div className={LAYOUT_STYLES.scrollableContent}>
+				<div className={LAYOUT_STYLES.contentArea}>
+					<div className={LAYOUT_STYLES.inputContainer}>
+						<PromptInput
+							isLoading={isLoading}
+							mode={mode}
+							onModeChange={handleModeChange}
+							onSubmit={handlePromptSubmit}
+							onToggleProviders={() => {}}
+							showProviders={true}
+						/>
 					</div>
+
+					<div className={LAYOUT_STYLES.imageWrapper}>
+						{images.length > 0 ? (
+							<div className={LAYOUT_STYLES.imageContainer}>
+								<div className={LAYOUT_STYLES.imageBox}>
+									<ImageDisplay
+										failed={failedProviders.includes("replicate")}
+										image={images[0]?.image}
+										modelId={images[0]?.modelId ?? "N/A"}
+										provider={images[0]?.provider || "replicate"}
+										timing={timings["replicate"]}
+									/>
+								</div>
+							</div>
+						) : null}
+					</div>
+
+					{activePrompt && activePrompt.length > 0 && (
+						<div className={LAYOUT_STYLES.promptDisplay}>
+							<p className="text-sm">Current prompt: {activePrompt}</p>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
