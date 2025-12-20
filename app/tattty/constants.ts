@@ -13,6 +13,16 @@ export const STYLES = [
   { id: "realism", label: "Realism", description: "Photorealistic depictions of people, animals, or objects." },
   { id: "trash-polka", label: "Trash Polka", description: "Collage-like style mixing realism and abstract strokes." },
   { id: "bio-mechanical", label: "Bio-Mechanical", description: "Fusing human anatomy with machine parts." },
+  { id: "minimalist", label: "Minimalist", description: "Simple, clean designs with negative space." },
+  { id: "abstract", label: "Abstract", description: "Non-representational forms and symbolic imagery." },
+  { id: "illustrative", label: "Illustrative", description: "Comic book style with bold colors and outlines." },
+  { id: "cartoon", label: "Cartoon", description: "Playful, exaggerated features and vibrant hues." },
+  { id: "gothic", label: "Gothic", description: "Dark, ornate designs with intricate details." },
+  { id: "steampunk", label: "Steampunk", description: "Victorian-era machinery fused with organic elements." },
+  { id: "cyberpunk", label: "Cyberpunk", description: "Neon lights, circuitry, and futuristic dystopia." },
+  { id: "floral", label: "Floral", description: "Beautiful flowers and botanical motifs." },
+  { id: "mandala", label: "Mandala", description: "Symmetrical patterns radiating from a center." },
+  { id: "horror", label: "Horror", description: "Spooky, macabre themes with dark imagery." },
 ] as const;
 
 export type TattooStyle = typeof STYLES[number]["id"];

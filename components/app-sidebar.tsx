@@ -43,8 +43,8 @@ const data = {
 			icon: IconDashboard,
 		},
 		{
-			title: "Claude",
-			url: "/tattty/claude",
+			title: "Screw Ups",
+			url: "/tattty/screw-ups",
 			icon: IconBrain,
 		},
 		{

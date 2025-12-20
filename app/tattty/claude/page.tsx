@@ -52,7 +52,7 @@ export default function Page() {
 			{/* Header section - completely separate */}
 			<div className={LAYOUT_STYLES.headerSection}>
 				<h1 className={LAYOUT_STYLES.headerText}>
-					CLAUDE? 🧠
+					Screw Ups 🧠
 				</h1>
 			</div>
 

@@ -63,7 +63,7 @@ export const UniformBadgeSection = ({ title, items, selected, onSelect }: any) =
   return (
     <section className="space-y-8">
       <h2 className="text-center text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/50">{title}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 place-items-center">
         {items.map((item: any) => {
           const isSelected = selected === item;
 
@@ -102,7 +102,7 @@ export const UniformBadgeSection = ({ title, items, selected, onSelect }: any) =
               <Button
                 variant="outline"
                 className={cn(
-                  "h-20 rounded-2xl font-black uppercase text-sm transition-all w-full px-4 relative overflow-hidden",
+                  "h-20 rounded-2xl font-black uppercase text-sm transition-all w-full px-4 relative overflow-hidden text-center",
                   isSelected
                     ? "shadow-2xl shadow-primary/30 ring-2 ring-primary/50 border-primary"
                     : "hover:shadow-lg hover:shadow-primary/10 border-border/60 hover:border-primary/40",
