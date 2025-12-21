@@ -1,50 +1,57 @@
 "use server";
 
-import { fal } from "@fal-ai/client";
+import Replicate from "replicate";
 
 export async function generateTattoo(prompt: string, aspectRatio: string = "1:1") {
-  if (!process.env.FAL_KEY) {
-    console.error("❌ Fal API key is missing");
-    return { success: false, error: "Fal API key is missing" };
+  if (!process.env.REPLICATE_API_TOKEN) {
+    console.error("❌ Replicate API token is missing");
+    return { success: false, error: "Replicate API token is missing" };
   }
 
   console.log("🚀 Tattty Generation started with prompt:", prompt);
 
-  const fullPrompt = `${prompt}, white background`;
+  // Clean and enhance the prompt for the custom LoRA model
+  const fullPrompt = `${prompt}, white background, clean lines, stencil style`;
 
-  // Map aspect ratio to Fal image_size
-  const aspectMap: Record<string, "square" | "portrait_4_3" | "landscape_4_3" | "landscape_16_9"> = {
-    "1:1": "square",
-    "3:4": "portrait_4_3",
-    "4:3": "landscape_4_3",
-    "16:9": "landscape_16_9",
+  // Map aspect ratio to Replicate format
+  const aspectMap: Record<string, string> = {
+    "1:1": "1:1",
+    "3:4": "3:4", 
+    "4:3": "4:3",
+    "16:9": "16:9"
   };
-  const imageSize = aspectMap[aspectRatio] || "square";
+  const replicateAspectRatio = aspectMap[aspectRatio] || "1:1";
 
   try {
-    console.log("⏳ Running Fal model...");
+    console.log("⏳ Running custom LoRA model on Replicate...");
 
-    const result = await fal.subscribe("fal-ai/flux/schnell", {
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
+    });
+
+    const result = await replicate.run("tattzy25/tattty_4_all:4e8f6c1dc77db77dabaf98318cde3679375a399b434ae2db0e698804ac84919c", {
       input: {
-        prompt: fullPrompt, // The prompt with white background
-        image_size: imageSize,
-        num_inference_steps: 4,
-        output_format: "png",
-        num_images: 1,
-        enable_safety_checker: false,
-      },
-      onQueueUpdate: (update) => {
-        if (update.status === "IN_PROGRESS") {
-          console.log("⏳ Generation in progress...");
-        }
-      },
+        prompt: fullPrompt,
+        aspect_ratio: replicateAspectRatio,
+        model: "dev", // Use dev model for best quality
+        guidance_scale: 3,
+        num_inference_steps: 28,
+        num_outputs: 1,
+        output_format: "webp",
+        output_quality: 80,
+        disable_safety_checker: true,
+        go_fast: false,
+        megapixels: "1"
+      }
     });
 
     console.log("✅ Generation succeeded:", result);
 
-    // Handle Fal output
-    if (result.data && result.data.images && result.data.images.length > 0) {
-      const imageUrl = result.data.images[0].url;
+    // Handle Replicate output - result is an array of file objects
+    const output = result as any[];
+    if (output && output.length > 0) {
+      // Each item has a url() method
+      const imageUrl = output[0].url();
       return { success: true, output: imageUrl };
     } else {
       return { success: false, error: "No image generated" };
@@ -54,13 +61,13 @@ export async function generateTattoo(prompt: string, aspectRatio: string = "1:1"
     console.error("❌ Error generating tattoo:", error);
     const errorMessage = error?.message || "Unknown error";
     if (errorMessage.includes("API key") || errorMessage.includes("auth")) {
-      return { success: false, error: "🚨 FAL API KEY INVALID! Check your .env.local file for FAL_KEY." };
+      return { success: false, error: "🚨 REPLICATE API KEY INVALID! Check your .env.local file for REPLICATE_API_TOKEN." };
     }
     if (errorMessage.includes("model")) {
-      return { success: false, error: "🚨 FAL MODEL UNAVAILABLE! Check Fal for model status." };
+      return { success: false, error: "🚨 CUSTOM LORA MODEL UNAVAILABLE! Check Replicate for model status." };
     }
     if (errorMessage.includes("rate limit")) {
-      return { success: false, error: "🚨 FAL RATE LIMIT EXCEEDED! Try again later." };
+      return { success: false, error: "🚨 REPLICATE RATE LIMIT EXCEEDED! Try again later." };
     }
     return { success: false, error: `🚨 TATTOO GENERATION FAILED: ${errorMessage}. Check API key and model.` };
   }

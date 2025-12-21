@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 export function TatttyForm() {
   const [style, setStyle] = useState<TattooStyle>(STYLES[0].id);
   const [placement, setPlacement] = useState<TattooPlacement>(PLACEMENTS[0].id);
-  const [color, setColor] = useState<TattooColor>(COLORS[0]);
+  const [color, setColor] = useState<TattooColor>("Black & Grey");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>(ASPECT_RATIOS[0].value);
   const [mood, setMood] = useState<Mood>(MOODS[0]);
   const [q1, setQ1] = useState("");

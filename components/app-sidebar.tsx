@@ -40,7 +40,7 @@ const data = {
 		{
 			title: "Tattty AI",
 			url: "/tattty",
-			icon: IconDashboard,
+			con: IconDashboard,
 		},
 		{
 			title: "Screw Ups",
@@ -90,14 +90,14 @@ const data = {
 			icon: IconSettings,
 		},
 		{
+			title: "Admin",
+			url: "/tattty/admin",
+			icon: IconSettings,
+		},
+		{
 			title: "Get Help",
 			url: "/tattty/get-help",
 			icon: IconHelp,
-		},
-		{
-			title: "Search",
-			url: "/tattty/search",
-			icon: IconSearch,
 		},
 	],
 };

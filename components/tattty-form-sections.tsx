@@ -17,7 +17,6 @@ export const TattooVisuals = ({ style, setStyle, placement, setPlacement, color,
     <PillCarouselSection title="Mood & Theme" items={MOODS.map(m => ({ id: m, label: m }))} selected={mood} onSelect={setMood} />
     
     <div className="space-y-12 pt-8">
-      <UniformBadgeSection title="Ink Palette" items={COLORS} selected={color} onSelect={setColor} />
       <UniformBadgeSection title="Frame Aspect" items={ASPECT_RATIOS.map(ar => `${ar.label} (${ar.value})`)} selected={`${ASPECT_RATIOS.find(ar => ar.value === aspectRatio)?.label} (${aspectRatio})`} onSelect={(label: string) => {
         const match = label.match(/(.+) \((.+)\)/);
         if (match) {
@@ -57,72 +56,49 @@ export const PillCarouselSection = ({ title, items, selected, onSelect }: any) =
   </section>
 );
 
-export const UniformBadgeSection = ({ title, items, selected, onSelect }: any) => {
-  const isColorSection = title === "Ink Palette";
+export const UniformBadgeSection = ({ title, items, selected, onSelect }: any) => (
+  <section className="space-y-8">
+    <h2 className="text-center text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/50">{title}</h2>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 place-items-center">
+      {items.map((item: any) => {
+        const isSelected = selected === item;
 
-  return (
-    <section className="space-y-8">
-      <h2 className="text-center text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/50">{title}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 place-items-center">
-        {items.map((item: any) => {
-          const isSelected = selected === item;
+        // Aspect ratio previews
+        const aspectMap: Record<string, string> = {
+          "Square (1:1)": "aspect-square",
+          "Portrait (3:4)": "aspect-[3/4]",
+          "Landscape (4:3)": "aspect-[4/3]",
+          "Wide (16:9)": "aspect-[16/9]",
+        };
+        const aspectStyle = { aspectRatio: aspectMap[item] || "aspect-square" };
 
-          let colorClass = "";
-          let aspectStyle = {};
-
-          if (isColorSection) {
-            // Color swatches for palette using global theme colors
-            const colorMap: Record<string, string> = {
-              "Black & Grey": "bg-black",
-              "Full Color": "bg-gradient-to-br from-primary via-secondary to-accent",
-              "Red Ink Accents": "bg-destructive",
-              "Blue Ink": "bg-primary",
-              "Minimalist": "bg-background border-2 border-border",
-            };
-            colorClass = colorMap[item] || "bg-muted";
-          } else {
-            // Aspect ratio previews
-            const aspectMap: Record<string, string> = {
-              "Square": "aspect-square",
-              "Portrait": "aspect-[3/4]",
-              "Landscape": "aspect-[4/3]",
-              "Wide": "aspect-[16/9]",
-            };
-            aspectStyle = { aspectRatio: aspectMap[item] || "aspect-square" };
-          }
-
-          return (
-            <motion.div
-              key={item}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onSelect(item)}
-              className="cursor-pointer"
+        return (
+          <motion.div
+            key={item}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onSelect(item)}
+            className="cursor-pointer"
+          >
+            <Button
+              variant="outline"
+              className={cn(
+                "h-20 rounded-2xl font-black uppercase text-sm transition-all w-full px-4 relative overflow-hidden text-center",
+                isSelected
+                  ? "shadow-2xl shadow-primary/30 ring-2 ring-primary/50 border-primary"
+                  : "hover:shadow-lg hover:shadow-primary/10 border-border/60 hover:border-primary/40"
+              )}
+              style={aspectStyle}
             >
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-20 rounded-2xl font-black uppercase text-sm transition-all w-full px-4 relative overflow-hidden text-center",
-                  isSelected
-                    ? "shadow-2xl shadow-primary/30 ring-2 ring-primary/50 border-primary"
-                    : "hover:shadow-lg hover:shadow-primary/10 border-border/60 hover:border-primary/40",
-                  isColorSection ? `text-white ${colorClass}` : "",
-                  !isColorSection ? colorClass : ""
-                )}
-                style={aspectStyle}
-              >
-                {!isColorSection && (
-                  <div className="absolute inset-2 border-2 border-current opacity-20 rounded-lg" />
-                )}
-                <span className="truncate relative z-10">{item}</span>
-              </Button>
-            </motion.div>
-          );
-        })}
-      </div>
-    </section>
-  );
-};
+              <div className="absolute inset-2 border-2 border-current opacity-20 rounded-lg" />
+              <span className="truncate relative z-10">{item}</span>
+            </Button>
+          </motion.div>
+        );
+      })}
+    </div>
+  </section>
+);
 
 export const SoulSection = ({ q1, setQ1, q2, setQ2 }: any) => (
   <div className="space-y-8">
