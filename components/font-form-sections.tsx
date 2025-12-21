@@ -8,17 +8,6 @@ import { FONT_STYLES, UI_TEXT } from "@/app/tattty/fonts/constants";
 
 export const FontVisuals = ({ text, setText, color, setColor, style, setStyle, customization, setCustomization }: any) => (
   <div className="space-y-12">
-    <section className="space-y-6">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{UI_TEXT.enterTextLabel}</label>
-        <Textarea 
-          placeholder={UI_TEXT.enterTextPlaceholder} 
-          className="min-h-40 text-3xl font-black text-center rounded-[3rem] bg-muted/30 border-border/50 focus:ring-primary/20 placeholder:opacity-30 p-10"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </div>
-    </section>
 
     <section className="space-y-6">
       <div className="flex flex-col items-center gap-3 text-center">

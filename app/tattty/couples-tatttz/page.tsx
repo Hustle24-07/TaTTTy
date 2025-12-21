@@ -35,10 +35,13 @@ export default function Page() {
 	return (
 		<div className={LAYOUT_STYLES.pageContainer}>
 			{/* Header section - completely separate */}
-			<div className={LAYOUT_STYLES.headerSection}>
-				<h1 className={LAYOUT_STYLES.headerText}>
-					{COUPLES_UI_TEXT.title}
+			<div className="shrink-0 px-4 sm:px-6 md:px-8 lg:px-10 text-center">
+				<h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/50 uppercase pt-3 sm:pt-4 md:pt-6 lg:pt-8">
+					Couples TaTTTz
 				</h1>
+				<p className="text-muted-foreground text-lg sm:text-xl font-medium max-w-2xl mx-auto mt-4">
+					Create matching tattoo designs for couples with AI-powered creativity
+				</p>
 			</div>
 
 			{/* Scrollable content area */}
@@ -121,11 +124,14 @@ export default function Page() {
 								items={ASPECT_RATIOS.map((ar) => `${ar.label} (${ar.value})`)} 
 								selected={`${ASPECT_RATIOS.find((ar) => ar.value === aspectRatio)?.label} (${aspectRatio})`} 
 								onSelect={(label: string) => {
-									const match = label.match(/(.+) \((.+)\)/);
-									if (match) {
-										setAspectRatio(match[2]);
+								const match = label.match(/(.+) \((.+)\)/);
+								if (match) {
+									const ratio = match[2];
+									if (ratio === "1:1" || ratio === "3:4" || ratio === "4:3" || ratio === "16:9") {
+										setAspectRatio(ratio);
 									}
-								}} 
+								}
+							}} 
 								aspectRatios={ASPECT_RATIOS} 
 							/>
 						</div>

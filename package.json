@@ -59,6 +59,7 @@
 		"embla-carousel-auto-scroll": "^8.6.0",
 		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-react": "^8.6.0",
+		"groq-sdk": "^0.37.0",
 		"input-otp": "^1.4.2",
 		"jspdf": "^3.0.4",
 		"lucide-react": "^0.546.0",

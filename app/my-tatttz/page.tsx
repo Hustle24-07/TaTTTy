@@ -294,11 +294,11 @@ export default function MyTaTTTzPage() {
 	return (
 		<div className="flex flex-1 flex-col space-y-6 p-4 sm:space-y-8 sm:p-6">
 			<div className="space-y-2 sm:space-y-4 text-center">
-				<h1 className="font-(family-name:--font-rock-salt) font-bold text-3xl tracking-tight sm:text-4xl md:text-5xl">
+				<h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/50 uppercase">
 					My TaTTTz
 				</h1>
-				<p className="font-(family-name:--font-orbitron) text-base text-muted-foreground sm:text-lg">
-					your life, your pain, your power, our ink
+				<p className="text-muted-foreground text-lg sm:text-xl font-medium max-w-2xl mx-auto mt-4">
+					Your collection of AI-generated tattoo designs and creations
 				</p>
 			</div>
 

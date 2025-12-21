@@ -13,6 +13,7 @@ import {
 	IconNetwork,
 	IconSearch,
 	IconSettings,
+	IconSparkles,
 	IconTypography,
 } from "@tabler/icons-react";
 import type * as React from "react";
@@ -40,7 +41,7 @@ const data = {
 		{
 			title: "Tattty AI",
 			url: "/tattty",
-			con: IconDashboard,
+			icon: IconSparkles,
 		},
 		{
 			title: "Screw Ups",
@@ -52,21 +53,7 @@ const data = {
 			url: "/tattty/couples-tatttz",
 			icon: IconNetwork,
 		},
-		{
-			title: "Are All",
-			url: "/tattty/are-all",
-			icon: IconLayout,
-		},
-		{
-			title: "Fucking",
-			url: "/tattty/fucking",
-			icon: IconAlertCircle,
-		},
-		{
-			title: "Morons",
-			url: "/tattty/morons",
-			icon: IconHelpCircle,
-		},
+
 		{
 			title: "Gallery",
 			url: "/tattty/gallery",

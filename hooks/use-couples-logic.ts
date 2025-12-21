@@ -6,7 +6,7 @@ import {
   type ProviderKey,
 } from "@/lib/provider-config";
 import { useImageGeneration } from "@/hooks/use-image-generation";
-import { STYLES, ASPECT_RATIOS } from "@/app/tattty/constants";
+import { STYLES, ASPECT_RATIOS, type AspectRatio } from "@/app/tattty/constants";
 
 export function useCouplesLogic() {
   const {
@@ -20,7 +20,7 @@ export function useCouplesLogic() {
 
   const [input, setInput] = useState("");
   const [style, setStyle] = useState(STYLES[0].id);
-  const [aspectRatio, setAspectRatio] = useState(ASPECT_RATIOS[0].value);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>(ASPECT_RATIOS[0].value);
   const [files, setFiles] = useState<File[] | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

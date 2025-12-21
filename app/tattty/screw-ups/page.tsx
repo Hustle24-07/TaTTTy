@@ -43,12 +43,15 @@ export default function Page() {
 	return (
 		<UploadedImagesProvider>
 			<div className={LAYOUT_STYLES.pageContainer}>
-				{/* Header section - completely separate */}
-				<div className={LAYOUT_STYLES.headerSection}>
-					<h1 className={LAYOUT_STYLES.headerText}>
-						Screw Ups 🧠
-					</h1>
-				</div>
+			{/* Header section - completely separate */}
+			<div className="shrink-0 px-4 sm:px-6 md:px-8 lg:px-10 text-center">
+				<h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/50 uppercase pt-3 sm:pt-4 md:pt-6 lg:pt-8">
+					Screw Ups
+				</h1>
+				<p className="text-muted-foreground text-lg sm:text-xl font-medium max-w-2xl mx-auto mt-4">
+					Transform your tattoo ideas into reality with AI-powered design
+				</p>
+			</div>
 
 				{/* Scrollable content area */}
 				<div className={LAYOUT_STYLES.scrollableContent}>
