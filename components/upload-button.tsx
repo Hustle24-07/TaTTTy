@@ -1,14 +1,16 @@
 "use client";
 
 import { ImageUpIcon, XIcon } from "lucide-react";
-import { type ChangeEventHandler, useRef, useState } from "react";
-import { toast } from "sonner";
+import { type ChangeEventHandler, useId, useRef, useState } from "react";
+import { useToast } from "@/components/providers/toast-provider";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useUploadedImages } from "@/components/uploaded-images-provider";
 
 export const UploadButton = () => {
+	const { toast, info, error, success, dismiss } = useToast();
 	const { addImage } = useUploadedImages();
+	const id = useId();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const [isUploading, setIsUploading] = useState(false);
@@ -20,7 +22,7 @@ export const UploadButton = () => {
 		if (abortControllerRef.current) {
 			abortControllerRef.current.abort();
 			abortControllerRef.current = null;
-			toast.info("Upload cancelled");
+			info("Upload cancelled");
 		}
 	};
 
@@ -32,7 +34,7 @@ export const UploadButton = () => {
 		}
 
 		if (isDemo) {
-			toast.error("Uploads are disabled in demo mode");
+			error("Uploads are disabled in demo mode");
 			return;
 		}
 
@@ -40,7 +42,7 @@ export const UploadButton = () => {
 		const maxSize = 4.5 * 1024 * 1024; // 4.5MB
 		const oversizedFiles = files.filter((file) => file.size > maxSize);
 		if (oversizedFiles.length > 0) {
-			toast.error(
+			error(
 				`${oversizedFiles.length} file${oversizedFiles.length > 1 ? "s" : ""} exceed the 4.5MB limit`,
 				{
 					description: "Please use smaller files for server uploads",
@@ -185,6 +187,7 @@ export const UploadButton = () => {
 							</span>
 						</div>
 					</div>,
+					"default",
 					{ id: toastId, duration: Number.POSITIVE_INFINITY },
 				);
 			}
@@ -193,14 +196,14 @@ export const UploadButton = () => {
 			abortControllerRef.current = null;
 
 			// Dismiss progress toast
-			toast.dismiss(toastId);
+			dismiss(toastId);
 
 			// Show consolidated toast notifications
 			const successful = results.filter((r) => r.status === "fulfilled");
 			const failed = results.filter((r) => r.status === "rejected");
 
 			if (successful.length > 0) {
-				toast.success(
+				success(
 					`${successful.length} file${successful.length > 1 ? "s" : ""} uploaded successfully`,
 				);
 			}
@@ -211,7 +214,7 @@ export const UploadButton = () => {
 					firstError.status === "rejected" && firstError.reason instanceof Error
 						? firstError.reason.message
 						: "Unknown error";
-				toast.error(
+				error(
 					`Failed to upload ${failed.length} file${failed.length > 1 ? "s" : ""}`,
 					{ description: message },
 				);
@@ -231,7 +234,7 @@ export const UploadButton = () => {
 			<input
 				accept="image/*"
 				className="hidden"
-				id="upload-input"
+				id={id}
 				multiple
 				onChange={handleChange}
 				ref={inputRef}

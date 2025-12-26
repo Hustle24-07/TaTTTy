@@ -29,6 +29,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { Kbd } from "@/components/ui/kbd"
+import { LoaderGooeyBlobs } from "@/components/gooey-blobs"
 
 const client = new Search({
   url: process.env.NEXT_PUBLIC_DB_UPSTASH_SEARCH_REST_URL || "",
@@ -97,7 +98,13 @@ export function KbdInputGroup() {
         />
         <CommandList>
           <CommandEmpty>
-            {loading ? "Searching..." : "No results found."}
+            {loading ? (
+              <div className="flex justify-center py-6">
+                <LoaderGooeyBlobs size={24} />
+              </div>
+            ) : (
+              "No results found."
+            )}
           </CommandEmpty>
           
           {results.length > 0 && (

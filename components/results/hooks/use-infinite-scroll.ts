@@ -2,7 +2,7 @@
 
 import type { ListBlobResult } from "@vercel/blob";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/components/providers/toast-provider";
 import { loadMoreImages } from "@/app/actions/load-more-images";
 
 type UseInfiniteScrollOptions = {
@@ -16,6 +16,7 @@ export const useInfiniteScroll = ({
 	initialCursor,
 	initialHasMore = false,
 }: UseInfiniteScrollOptions) => {
+	const { error } = useToast();
 	const [blobs, setBlobs] = useState(initialData);
 	const [cursor, setCursor] = useState(initialCursor);
 	const [hasMore, setHasMore] = useState(initialHasMore);
@@ -31,13 +32,13 @@ export const useInfiniteScroll = ({
 			setBlobs((prev) => [...prev, ...result.blobs]);
 			setCursor(result.cursor);
 			setHasMore(result.hasMore);
-		} catch (error) {
-			console.error("Failed to load more images:", error);
-			toast.error("Failed to load more images");
+		} catch (err) {
+			console.error("Failed to load more images:", err);
+			error("Failed to load more images");
 		} finally {
 			setIsLoadingMore(false);
 		}
-	}, [cursor, hasMore, isLoadingMore]);
+	}, [cursor, hasMore, isLoadingMore, error]);
 
 	useEffect(() => {
 		const observer = new IntersectionObserver(

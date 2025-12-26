@@ -1,6 +1,7 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { useId } from "react";
+import { LoaderGooeyBlobs } from "@/components/gooey-blobs";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
@@ -30,14 +31,15 @@ export function PromptTextarea({
 	className = "",
 	showButton = false,
 }: PromptTextareaProps) {
+	const id = useId();
 	return (
 		<div className="space-y-2">
-			<Label htmlFor="prompt" className="font-medium">
+			<Label htmlFor={id} className="font-medium">
 				{label}
 			</Label>
 			<InputGroup className={className}>
 				<InputGroupTextarea
-					id="prompt"
+					id={id}
 					value={value}
 					onChange={(e) => onChange(e.target.value)}
 					onKeyDown={onKeyDown}
@@ -53,7 +55,7 @@ export function PromptTextarea({
 						size="lg"
 						className="w-full rounded-full"
 					>
-						{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+						{isLoading && <LoaderGooeyBlobs className="mr-2" size={16} />}
 						Create Now
 					</Button>
 				</div>

@@ -5,7 +5,7 @@ import type { Easing } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export interface AnimatedToastProps {
-    message: string;
+    message: React.ReactNode;
     description?: string;
     type?: "default" | "success" | "error" | "info" | "warning";
     duration?: number;
@@ -121,6 +121,7 @@ export function AnimatedToast({
                         <div className={config.iconColor}>
                             {type === "success" && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <title>Success Icon</title>
                                     <motion.path
                                         d="M13.5 4L6 11.5L2.5 8"
                                         stroke="currentColor"
@@ -139,6 +140,7 @@ export function AnimatedToast({
                             )}
                             {type === "error" && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <title>Error Icon</title>
                                     <motion.path
                                         d="M12 4L4 12M4 4L12 12"
                                         stroke="currentColor"
@@ -156,6 +158,7 @@ export function AnimatedToast({
                             )}
                             {type === "info" && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <title>Info Icon</title>
                                     <circle
                                         cx="8"
                                         cy="8"
@@ -180,6 +183,7 @@ export function AnimatedToast({
                             )}
                             {type === "warning" && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <title>Warning Icon</title>
                                     <path
                                         d="M8 2L14 13H2L8 2Z"
                                         stroke="currentColor"
@@ -250,6 +254,7 @@ export function AnimatedToast({
                     transition={{ delay: 0.2 }}
                 >
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <title>Close</title>
                         <path
                             d="M9 3L3 9M3 3L9 9"
                             stroke="currentColor"

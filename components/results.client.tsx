@@ -6,11 +6,10 @@ import {
   FileIcon,
   ImageIcon,
   ImageUpIcon,
-  Loader2Icon,
   UploadIcon,
 } from "lucide-react";
 import { useActionState, useEffect, useId } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/components/providers/toast-provider";
 import { search } from "@/app/actions/search";
 import ImagePreview from "./image_preview";
 import { Button } from "./ui/button";
@@ -19,9 +18,10 @@ import { Input } from "./ui/input";
 import { UploadButton } from "./upload-button";
 import { useUploadedImages } from "./uploaded-images-provider";
 import { AspectRatio } from "./ui/aspect-ratio";
-import { GallerySearchBar } from "./gallery-search-bar";
+import { LoaderGooeyBlobs } from "@/components/gooey-blobs";
 
 type ResultsClientProps = {
+
   defaultData: ListBlobResult["blobs"];
   initialCursor?: string;
   initialHasMore?: boolean;
@@ -31,12 +31,13 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
   const { images } = useUploadedImages();
   const [state, formAction, isPending] = useActionState(search, { data: [] });
   const searchId = useId();
+  const { error } = useToast();
 
   useEffect(() => {
     if ("error" in state) {
-      toast.error(state.error);
+      error(state.error);
     }
-  }, [state]);
+  }, [state, error]);
 
   const reset = () => {
     globalThis.location.reload();
@@ -139,7 +140,7 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
         />
         {isPending ? (
           <Button className="shrink-0" disabled size="icon" variant="ghost">
-            <Loader2Icon className="size-4 animate-spin" />
+            <LoaderGooeyBlobs size={16} />
           </Button>
         ) : (
           <UploadButton />

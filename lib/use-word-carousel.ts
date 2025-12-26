@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface UseWordCarouselOptions {
-  words: string[];
+  words: string[] | readonly string[];
   interval?: number;
 }
 

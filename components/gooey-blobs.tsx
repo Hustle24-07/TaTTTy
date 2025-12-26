@@ -1,6 +1,9 @@
 "use client";
-import * as React from "react";
-import { motion, HTMLMotionProps } from "motion/react";
+import { useId } from "react";
+import { motion, type HTMLMotionProps } from "motion/react";
+
+
+
 import { cn } from "@/lib/utils";
 export interface LoaderGooeyBlobsProps
   extends Omit<HTMLMotionProps<"div">, "children"> {
@@ -15,11 +18,13 @@ export function LoaderGooeyBlobs({
   duration = 1.5,
   ...props
 }: LoaderGooeyBlobsProps) {
+  const filterId = useId();
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <motion.div className={cn("flex items-center gap-2", className)} {...props}>
       <svg width="0" height="0">
+        <title>Gooey Filter Definition</title>
         <defs>
-          <filter id="gooey">
+          <filter id={filterId}>
             <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
             <feColorMatrix
               in="blur"
@@ -32,7 +37,7 @@ export function LoaderGooeyBlobs({
         </defs>
       </svg>
       <div
-        style={{ filter: "url(#gooey)" } as React.CSSProperties}
+        style={{ filter: `url(#${filterId})` } as React.CSSProperties}
         className="flex gap-1"
       >
         {[0, 1, 2].map((index) => (
@@ -57,6 +62,6 @@ export function LoaderGooeyBlobs({
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

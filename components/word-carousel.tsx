@@ -1,6 +1,8 @@
 "use client";
 import * as React from "react";
-import { motion, AnimatePresence, HTMLMotionProps } from "motion/react";
+import { motion, AnimatePresence, type HTMLMotionProps } from "motion/react";
+
+
 import { cn } from "@/lib/utils";
 import {
   useWordCarousel,

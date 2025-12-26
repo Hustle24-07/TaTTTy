@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { ToastProvider } from "@/components/providers/toast-provider";
 
 import { cn } from "@/lib/utils";
 
@@ -64,9 +64,10 @@ const RootLayout = ({ children }: RootLayoutProps) => (
 				disableTransitionOnChange
 				enableSystem
 			>
-				{children}
-				<Analytics />
-				<Toaster />
+				<ToastProvider>
+					{children}
+					<Analytics />
+				</ToastProvider>
 			</ThemeProvider>
 		</body>
 	</html>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useWordCarousel } from "@/lib/use-word-carousel";
 import { TATTTY_UI_TEXT } from "@/app/tattty/constants";
 import { ReusableScrollArea } from "@/components/reusable-scroll-area";
 import { TextWordCarousel } from "@/components/word-carousel";
+
 
 export default function Ai02() {
   return (
