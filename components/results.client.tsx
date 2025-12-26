@@ -19,6 +19,7 @@ import { Input } from "./ui/input";
 import { UploadButton } from "./upload-button";
 import { useUploadedImages } from "./uploaded-images-provider";
 import { AspectRatio } from "./ui/aspect-ratio";
+import { GallerySearchBar } from "./gallery-search-bar";
 
 type ResultsClientProps = {
   defaultData: ListBlobResult["blobs"];

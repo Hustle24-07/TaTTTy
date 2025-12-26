@@ -1,17 +1,12 @@
 "use client";
 
 import {
-	IconAlertCircle,
 	IconBrain,
 	IconChartBar,
-	IconDashboard,
 	IconHelp,
-	IconHelpCircle,
 	IconInnerShadowTop,
-	IconLayout,
 	IconListDetails,
 	IconNetwork,
-	IconSearch,
 	IconSettings,
 	IconSparkles,
 	IconTypography,

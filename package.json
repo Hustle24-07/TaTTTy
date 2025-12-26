@@ -49,6 +49,7 @@
 		"@tabler/icons-react": "^3.35.0",
 		"@tanstack/react-table": "^8.21.3",
 		"@upstash/search": "^0.1.6",
+		"@upstash/search-ui": "^0.1.5",
 		"@vercel/analytics": "^1.5.0",
 		"@vercel/blob": "^2.0.0",
 		"ai": "^5.0.107",
