@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ModelCardCarousel } from "@/components/ModelCardCarousel";
 import { ModelSelect } from "@/components/ModelSelect";
-import { PromptInput } from "@/components/PromptInput";
+// import { PromptInput } from "@/components/PromptInput";
 import { useImageGeneration } from "@/hooks/use-image-generation";
 import {
 	initializeProviderRecord,
@@ -78,7 +78,7 @@ export function ImagePlayground({
 		<div className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-7xl">
 				<Header />
-				<PromptInput
+				{/* <PromptInput
 					isLoading={isLoading}
 					mode={mode}
 					onModeChange={handleModeChange}
@@ -86,7 +86,7 @@ export function ImagePlayground({
 					onToggleProviders={toggleView}
 					showProviders={showProviders}
 					suggestions={suggestions}
-				/>
+				/> */}
 				<>
 					{(() => {
 						const getModelProps = () =>

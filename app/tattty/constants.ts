@@ -118,3 +118,14 @@ export const COUPLES_UI_TEXT = {
   loadingText: "INKING...",
   promptLabel: "Current prompt:",
 } as const;
+
+export const QUICK_IDEAS_SUGGESTIONS = [
+  { icon: "🎨", text: "Create a tattoo design" },
+  { icon: "💡", text: "Brainstorm ideas" },
+  { icon: "📝", text: "Refine a prompt" },
+];
+
+export const QUICK_IDEAS_UI_TEXT = {
+  title: "Quick Ideas",
+  description: "Get inspired with quick tattoo ideas and creative concepts. Explore different styles and find your perfect design.",
+} as const;
