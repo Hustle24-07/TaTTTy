@@ -51,9 +51,12 @@ export function GallerySearchBar({
         <Button className="shrink-0" disabled size="icon" variant="ghost">
           <Loader2Icon className="size-4 animate-spin" />
         </Button>
-      ) : (
+      ) : null}
+      {/* 
+        UploadButton is intentionally hidden and must never appear in the UI.
+        Do not uncomment or re-enable without explicit approval.
         <UploadButton />
-      )}
+      */}
     </form>
   );
 }

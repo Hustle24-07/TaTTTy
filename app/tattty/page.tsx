@@ -1,7 +1,6 @@
 "use client";
 
 import { TATTTY_UI_TEXT } from "@/app/tattty/constants";
-import { ReusableScrollArea } from "@/components/reusable-scroll-area";
 import { TextWordCarousel } from "@/components/word-carousel";
 
 
@@ -25,8 +24,6 @@ export default function Ai02() {
       </div>
 
       <div className="flex gap-12 w-full justify-center items-stretch">
-        <ReusableScrollArea items={11} label="Styles" />
-        <ReusableScrollArea items={11} label="Collors" />
       </div>
     </div>
   );
